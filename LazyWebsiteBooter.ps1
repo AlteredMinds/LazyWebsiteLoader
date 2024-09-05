@@ -1,81 +1,124 @@
-﻿<#
-Script Name: Website Startup
-Author: Christopher Bates
-Date: 2024-03-07
-Description: This PowerShell script automates opening websites used in class based on the current day of the week. It defines an array of objects containing website URLs along with the days they are typically accessed. The script then checks the current day of the week and opens the corresponding websites if they are scheduled for that day.
-Version: 1.0
-Contact: cb0988836@otc.edu
-#>
+﻿##############################################################################################################
+##################################### S T A R T   O F   C O N F I G ##########################################
 
 
+# Website variables you use for classes including the website urls. Remove or create variables to fit your needs.
 
-<# Array of objects containing websites used in class along with their properties.
+$otc = "https://my.otc.edu/"
+$netlab = "https://netlab.otc.edu/"
+$netacad = "https://www.netacad.com/"
+$testout = "https://labsimapp.testout.com/v6_0_583/index.html"
+$gitHub = "https://github.com/AlteredMinds"
 
-To customize the list of websites:
-1. Update the "Name" property with the website's name.
-2. Update the "URL" property with the website's URL.
-3. Update the "Days" property with the days you typically access the website.
 
-Add new objects to include additional websites or remove objects to exclude websites that are not needed. #>
+$classes = @(
+#########################################################################################################################
+# List of your classes. Each object represents a class and includes the following properties:                           #
+#  Name - The name of the class.                                                                                        #
+#  URLs - The websites you want to load for the class.                                                                  #
+#  Days - The days that you have class.                                                                                 #
+#  Times - The start and end times of class. Represented as a decimal in 24hr format (hour.min). Ex. (11.00, 13.05) is  #
+#          equal to 11:00am - 1:05pm.                                                                                   #
+#                                                                                                                       #
+#  Create or remove objects to match your number of classes. Then, customize the properties for each class.             #
+#  NOTE: The last object cannot have a ',' at the end, objects preceding the last object must.                          #
+#########################################################################################################################
 
-$websites = @(
+    ###   CLASS 1    ###
     [PSCustomObject]@{
-        Name = "Blank"
-        URL = "https://"
-        Days = @("Monday", "Tuesday", "Wednesday", "Thursday")
-    },
-    [PSCustomObject]@{
-        Name = "My OTC"
-        URL = "https://my.otc.edu/"
-        Days = @("Monday", "Tuesday", "Wednesday", "Thursday")
-    },
-    [PSCustomObject]@{
-        Name = "TestOut"
-        URL = "https://labsimapp.testout.com/v6_0_583/index.html"
-        Days = @("Monday", "Wednesday", "Thursday")
-    },
-    [PSCustomObject]@{
-        Name = "Cisco NetAcademy"
-        URL = "https://www.netacad.com/"
-        Days = @("Tuesday", "Thursday")
-    },
-    [PSCustomObject]@{
-        Name = "NetLab"
-        URL = "https://netlab.otc.edu/"
+        Name = "THE LINUX OPERATING SYSTEM"
+        URLs = @($otc, $testout, $netlab)
         Days = @("Monday", "Wednesday")
+        Times = @(8.00, 10.30)
+    },
+
+    ###   CLASS 2   ###
+    [PSCustomObject]@{
+        Name = "FIREWALL ESSENTIALS"
+        URLs = @($otc, $netlab)
+        Days = @("Monday", "Wednesday")
+        Times = @(13.00, 15.05)
+    },
+
+    ###   CLASS 3  ###
+    [PSCustomObject]@{
+        Name = "CCNAv7: SRWE"
+        URLs = @($otc, $netacad, $netlab)
+        Days = @("Monday", "Wednesday")
+        Times = @(15.30, 23.03)
     }
+
+####################################### E N D   O F   C O N F I G ############################################
+##############################################################################################################
 )
 
-
-
-# The current day of the week stored as a variable
+#variables for the current date and time
 $dayOfWeek = (Get-Date).DayOfWeek
+$time = [float]((Get-Date).Hour + (Get-Date).Minute * 0.01)
 
-# Iterate through the websites array and open url if day of week is in the days array of the website object
-foreach ($website In $websites)
+
+function CheckClass($_days, $_times)
 {
-    if ($website.Days -contains "Monday" -and $dayOfWeek -eq "Monday")
+    # Get the current day of the week
+    $currentDay = (Get-Date).DayOfWeek.ToString()
+
+    # Debug output to check the current day and the days array
+    Write-Host "Current Day: $currentDay"
+    Write-Host "Days Array: $($_days -join ', ')"
+
+    # Ensure $_days is an array and handle it correctly
+    if ($_days -is [Array] -and $_days -contains $currentDay)
     {
-        Start-Process $website.URL
-        Start-Sleep -Milliseconds 500
+        # Output the current time and the time range being checked
+        Write-Host "Current Time: $time"
+        Write-Host "Class Time Range: $($_times[0]) to $($_times[1])"
+
+        # Check if the current time is within the class time range
+        if ($time -ge $_times[0] -and $time -lt $_times[1])
+        {
+            Write-Host "Class is currently ongoing."
+            return $true     
+        }
+        else
+        {
+            Write-Host "Class time does not match."
+        }
     }
-    elseif ($website.Days -contains "Tuesday" -and $dayOfWeek -eq "Tuesday")
+    else
     {
-        Start-Process $website.URL
-        Start-Sleep -Milliseconds 500
+        Write-Host "Current day is not a class day."
     }
-    elseif ($website.Days -contains "Wednesday" -and $dayOfWeek -eq "Wednesday")
+    
+    return $false
+}
+
+
+#logic beepboop oO
+foreach ($class In $classes)
+{
+    $isCurrentClass = CheckClass($class.Days, $class.Times)
+    if ($isCurrentClass)
     {
-        Start-Process $website.URL
-        Start-Sleep -Milliseconds 500
+            Write-Host "Current class:" $class.Name
+            foreach ($website In $class.URLs)
+            {
+                Write-Host "Starting" $website
+                Start-Process $website
+                Start-Sleep -Milliseconds 100
+            }        
+
     }
-    elseif ($website.Days -contains "Thursday" -and $dayOfWeek -eq "Thursday")
-    {
-        Start-Process $website.URL
-        Start-Sleep -Milliseconds 500
-    }
-    elseif ($website.Days -contains "Friday" -and $dayOfWeek -eq "Friday")
-    {
-        Start-Process $website.URL
-    }
+}
+
+#Creates a scheduled task to run this script at login if it doesnt exist
+$taskName = "Start Websites at Login"
+$taskExists = Get-ScheduledTask | Where-Object {$_.TaskName -like $taskName }
+
+if(!$taskExists) 
+{
+    $args = '-command ' + $MyInvocation.MyCommand.Path
+    $action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument $args
+    $trigger = New-ScheduledTaskTrigger -AtLogOn
+    Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger *> $null
+    Write-Host 'Created new scheduled task! Your websites will now load at login.'
 }
