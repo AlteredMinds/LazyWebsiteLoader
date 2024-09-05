@@ -1,0 +1,32 @@
+{
+   "urls": {	  
+      "otc": "https://my.otc.edu",
+      "netlab": "https://netlab.otc.edu",
+      "netacad": "https://www.netacad.com",
+      "testout": "https://labsimapp.testout.com/v6_0_583/index.html",
+      "gitHub": "https://github.com/AlteredMinds"
+   },
+   "classes": [
+      {
+         "Name": "THE LINUX OPERATING SYSTEM",
+         "Room": "202",
+         "URLs": ["otc", "testout", "netlab"],
+         "Days": ["Monday", "Wednesday"],
+         "Times": [8.00, 10.30]
+      },
+      {
+         "Name": "FIREWALL ESSENTIALS",
+         "Room": "222",
+         "URLs": ["otc", "netlab", "gitHub"],
+         "Days": ["Monday", "Wednesday", "Friday"],
+         "Times": [13.00, 15.05]
+      },
+      {
+         "Name": "CCNAv7: SRWE",
+         "Room": "231",
+         "URLs": ["otc", "netacad", "netlab"],
+         "Days": ["Monday", "Wednesday"],
+         "Times": [15.30, 18.00]
+      } 
+   ]
+}
