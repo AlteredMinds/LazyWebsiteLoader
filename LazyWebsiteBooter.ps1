@@ -44,7 +44,7 @@ if(!$taskExists)
             Exit
         }
     }
-    $args = '-command ' + $MyInvocation.MyCommand.Path
+    $args = '-File ' + '"' + $MyInvocation.MyCommand.Path + '"'
     $action = New-ScheduledTaskAction -Execute 'Powershell.exe' -Argument $args
     $trigger = New-ScheduledTaskTrigger -AtLogOn
     try
