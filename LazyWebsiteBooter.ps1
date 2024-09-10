@@ -15,6 +15,7 @@ try
         [PSCustomObject]@{
             Name  = $class.Name
             Room  = $class.Room
+            Instructor = $class.Instructor
             URLs  = $class.URLs | ForEach-Object { $urls.$_ }
             Days  = $class.Days
             Times = $class.Times
@@ -90,7 +91,7 @@ foreach ($class In $classes)
     $isCurrentClass = Verify-Class -_days $class.Days -_times $class.Times
     if ($isCurrentClass)
     {
-        Write-Host $class.Name 'found in Sector' $class.Room
+        Write-Host $class.Name 'found in Sector' $class.Room 'of the' $class.Instructor 'nubula.'
         Write-Host 'Starting loading sequence.....'
         Start-Sleep -Milliseconds 100
         foreach ($website In $class.URLs)

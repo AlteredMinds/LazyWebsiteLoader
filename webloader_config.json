@@ -10,6 +10,7 @@
       {
          "Name": "THE LINUX OPERATING SYSTEM",
          "Room": "202",
+		 "Instructor": "Proctor",
          "URLs": ["otc", "testout", "netlab"],
          "Days": ["Monday", "Wednesday"],
          "Times": [8.00, 10.30]
@@ -17,6 +18,7 @@
       {
          "Name": "FIREWALL ESSENTIALS",
          "Room": "222",
+		 "Instructor": "Cain",
          "URLs": ["otc", "netlab", "gitHub"],
          "Days": ["Monday", "Wednesday", "Friday"],
          "Times": [13.00, 15.05]
@@ -24,6 +26,7 @@
       {
          "Name": "CCNAv7: SRWE",
          "Room": "231",
+		 "Instructor": "Cain",
          "URLs": ["otc", "netacad", "netlab"],
          "Days": ["Monday", "Wednesday"],
          "Times": [15.30, 18.00]
